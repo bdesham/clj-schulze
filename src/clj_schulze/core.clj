@@ -11,55 +11,63 @@
 
 ;; # Utility functions
 
-(defn flatten-sets [v]
+(defn flatten-sets
   "Like flatten, but pulls elements out of sets instead of sequences."
+  [v]
   (filter (complement set?)
           (rest (tree-seq set? seq (set v)))))
 
 ;; # Validation, canonicalization, etc.
 
-(defn validate-ballot [ballot candidates]
+(defn validate-ballot
   "Make sure that the ballot is a vector; contains no duplicate entries,
   including in nested sets; and contains only entries which appear in the set of
   candidates."
+  [ballot candidates]
   (and (vector? ballot)
        (when-let [fb (flatten-sets ballot)]
          (and (apply distinct? fb)
               (every? #(candidates %) fb)))))
 
-(defn validate-ballots [ballots candidates]
+(defn validate-ballots
   "Check every ballot in a sequence with validate-ballot."
+  [ballots candidates]
   (every? #(validate-ballot % candidates)))
 
-(defn validate-candidates [candidates]
+(defn validate-candidates
   "Make sure that the candidates set *is* a set and consists entirely of
   keywords."
+  [candidates]
   (and (set? candidates)
        (every? keyword? candidates)))
 
-(defn add-missing-candidates [ballot candidates]
+(defn add-missing-candidates
   "If any valid candidates don't appear on the ballot, add them in a set at the
   end of the ballot."
+  [ballot candidates]
   (let [extras (difference candidates (flatten-sets ballot))]
     (if (not (empty? extras))
       (conj ballot extras)
       ballot)))
 
-(defn canonical-ballot [ballot]
+(defn canonical-ballot
   "Return the ballot with the following changes: all keywords not in a set are
   converted to one-element sets; any nested sets (?!) are flattened; empty sets
   are removed."
+  [ballot]
   (map #(if (keyword? %)
           (set (vector %))
           (set (flatten-sets %)))
        (filter #(or (keyword %) (seq %)) ballot)))
 
-(defn canonical-ballots [ballots]
+(defn canonical-ballots
   "Call canonical-ballot for every ballot in a sequence."
+  [ballots]
   (map canonical-ballot ballots))
 
-(defn collapse-ballots [ballots]
+(defn collapse-ballots
   "Return a map from each ballot to the number of times it occurs."
+  [ballots]
   (frequencies ballots))
 
 ; vim: tw=80
