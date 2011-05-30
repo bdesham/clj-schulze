@@ -1,4 +1,4 @@
-(ns clj-condorcet.core
+(ns clj-schulze.core
   (:use [clojure.set :only (difference)]))
 
 ;; # Utility functions
