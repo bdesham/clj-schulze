@@ -43,10 +43,11 @@
 
 (defn add-missing-candidates
   "If any valid candidates don't appear on the ballot, add them in a set at the
-  end of the ballot."
+  end of the ballot. (Don't add an empty set if all of the valid candidates have
+  already been listed.)"
   [ballot candidates]
   (let [extras (difference candidates (flatten-sets ballot))]
-    (if (not (empty? extras))
+    (if (seq extras)
       (conj ballot extras)
       ballot)))
 
