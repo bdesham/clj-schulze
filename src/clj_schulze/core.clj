@@ -50,5 +50,9 @@
   "Call canonical-ballot for every ballot in a sequence."
   (map canonical-ballot ballots))
 
+(defn collapse-ballots [ballots]
+  "Return a map from each ballot to the number of times it occurs."
+  (frequencies ballots))
+
 ; vim: tw=80
 ; intended to be viewed with a window width of 108 columns
