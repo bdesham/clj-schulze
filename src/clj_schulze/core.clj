@@ -85,5 +85,20 @@
     (map (comp canonical-ballot #(add-missing-candidates % candidates))
          ballots)))
 
+;; # Voting stuff
+
+(defn pairwise-defeats
+  "Takes a ballot and returns a set of two-element vectors. Each vector `[:a
+  :b]` indicates that candidate a is preferred to candidate b. It is intended
+  that outside callers will use the single-argument form."
+  ([b] (pairwise-defeats b #{}))
+  ([b s]
+   (if (empty? (rest b))
+     s
+     (recur (rest b)
+            (apply conj s (for [winner (seq (first b)),
+                                loser (flatten-sets (rest b))]
+                            [winner loser]))))))
+
 ; vim: tw=80
 ; intended to be viewed with a window width of 108 columns
