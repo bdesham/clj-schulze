@@ -1,3 +1,11 @@
+; clj-schulze
+; A Clojure implementation of the Schulze voting method.
+;
+; https://github.com/bdesham/clj-schulze
+;
+; Copyright (c) 2011, Benjamin D. Esham.  This program is released under the MIT
+; license, which can be found in the "License" section of the file README.md.
+
 (ns clj-schulze.core
   (:use [clojure.set :only (difference)]))
 
