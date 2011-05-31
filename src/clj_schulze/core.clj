@@ -17,6 +17,25 @@
   (filter (complement set?)
           (rest (tree-seq set? seq (set v)))))
 
+; with thanks to gfrlog in #clojure
+(defn assoc-value-with-each
+  "Takes a sequence of two-element vectors where each first item is a list and
+  each second item is some value. Returns a sequence of maps where the values
+  are now associated with *each item* in the old first-element lists, instead of
+  being associated with the lists themselves.
+
+  Example: `(assoc-value-with-each [['(:a :b :c) 3], [[:d :e] 5]])`
+  -> `({:a 3}, {:b 3}, {:c 3}, {:d 5}, {:e 5})`"
+  [pairs]
+  (mapcat (fn [[lst cnt]] (for [k lst] {k cnt}))
+          pairs))
+
+(defn change-first-elements
+  "Apply the function f to the first element of each of the given two-element
+  vectors."
+  [f vv]
+  (map (fn [[a b]] [(f a) b]) vv))
+
 ;; # Validation, canonicalization, etc.
 
 (defn valid-ballot?
@@ -100,28 +119,11 @@
                                 loser (flatten-sets (rest b))]
                             [winner loser]))))))
 
-; note: to combine the hashes returned by `frequencies`, use (merge-with + a b ...)
-
-; with thanks to gfrlog in #clojure
-(defn assoc-value-with-each
-  "Takes a sequence of two-element vectors where each first item is a list and
-  each second item is some value. Returns a sequence of maps where the values
-  are now associated with *each item* in the old first-element lists, instead of
-  being associated with the lists themselves.
-
-  Example: `(assoc-value-with-each [['(:a :b :c) 3], [[:d :e] 5]])`
-  -> `({:a 3}, {:b 3}, {:c 3}, {:d 5}, {:e 5})`"
-  [pairs]
-  (mapcat (fn [[ks v]] (for [k ks] {k v}))
-          pairs))
-
-
-
 (defn total-pairwise-defeats
   "Takes a (counted) hash of ballots and returns a counted hash of the pairwise
   defeats.
   
-  The steps this function uses are:
+  The steps this function uses are, from inside to outside:
 
   1. Turn the input--a hash from ballots to occurrences--into a bunch of vectors
   where the first element is the ballot and the second is the number of
@@ -136,11 +138,9 @@
   4. Combine all of the resulting hashes so that we have the total number of
   occurrences for each pairwise defeat"
   [ballots]
-  (let [counts (for [k (keys ballots)]
-                 [k (ballots k)])]
-    (apply merge-with + (assoc-value-with-each (for [p counts]
-                                                 [(pairwise-defeats (first p))
-                                                  (second p)])))))
+  (apply merge-with +
+         (assoc-value-with-each
+           (change-first-elements pairwise-defeats (seq ballots)))))
 
 ; vim: tw=80
 ; intended to be viewed with a window width of 108 columns
