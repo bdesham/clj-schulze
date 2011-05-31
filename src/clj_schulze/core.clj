@@ -142,5 +142,13 @@
          (assoc-value-with-each
            (change-first-elements pairwise-defeats (seq ballots)))))
 
+(defn add-missing-pairs
+  "Ensures that every possible pair of candidates is represented in the hash of
+  pairwise defeats."
+  [defeats candidates]
+  (merge-with +
+              (apply conj {} (for [a candidates, b candidates] {[a b] 0}))
+              defeats))
+
 ; vim: tw=80
 ; intended to be viewed with a window width of 108 columns
