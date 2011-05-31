@@ -147,7 +147,9 @@
   pairwise defeats."
   [defeats candidates]
   (merge-with +
-              (apply conj {} (for [a candidates, b candidates] {[a b] 0}))
+              (apply conj {} (for [a candidates,
+                                   b candidates :when (not= a b)]
+                               {[a b] 0}))
               defeats))
 
 ; vim: tw=80
