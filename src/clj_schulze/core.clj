@@ -159,70 +159,22 @@
                                {[a b] 0}))
               defeats))
 
-(defn gt-d
-  [[x1 x2] [y1 y2]]
-  (or (or (and (> x1 y1)
-               (<= x2 y2))
-          (and (>= x1 y1)
-               (< x2 y2)))
-      (or (and (> x1 x2)
-               (<= y1 y2))
-          (and (>= x1 x2)
-               (< y1 y2)))))
-
-(defn min-d
-  [a b]
-  (if (gt-d a b)
-    b
-    a))
-
-(defn strongest-paths2
+(defn strongest-paths
   "Calculates the strength of the strongest path between each pair of
   candidates."
   [defeats candidates]
-  (let [p (apply conj (for [i candidates,
-                            j candidates :when (not= i j)]
-                          {[i j] [(defeats [i j]), (defeats [j i])]}))]
-    (def p2 (ref p))
-    (for [i candidates,
-          j candidates :when (not= i j),
-          k candidates :when (and (not= i k) (not= j k))]
-      (if (gt-d (min-d (@p2 [j i]) (@p2 [i k])) (@p2 [j k]))
-        (dosync (alter p2 assoc [j k] (min-d (@p2 [j i]) (@p2 [i k]))))))
-    @p2))
-
-;(defn strongest-paths
-;  "Calculates the strength of the strongest path between each pair of
-;  candidates."
-;  [defeats candidates]
-;  (let [p (apply conj (for [i candidates,
-;                            j candidates :when (not= i j)]
-;                        (if (> (defeats [i j]) (defeats [j i]))
-;                          {[i j] (defeats [i j])}
-;                          {[i j] 0})))]
-;    (def p2 (ref p))
-;    (for [i candidates,
-;          j candidates :when (not= i j),
-;          k candidates :when (and (not= i k) (not= j k))]
-;      (dosync (alter p2 assoc [j k] (max (@p2 [j k]) (min (@p2 [j i]) (@p2 [i k]))))))
-;    @p2))
-
-;(defn strongest-paths
-;  "Calculates the strength of the strongest path between each pair of
-;  candidates."
-;  [defeats candidates]
-;  (let [p (into {} (doall (for [i candidates,
-;                                j candidates :when (not= i j)]
-;                            (if (> (defeats [i j]) (defeats [j i]))
-;                              {[i j] (defeats [i j])}
-;                              {[i j] 0}))))]
-;    (loop [map {}]
-;      (for [i candidates,
-;            j candidates :when (not= i j),
-;            k candidates :when (and (not= i k) (not= j k))]
-;        (recur (assoc map [j k] (max (p [j k]) (min (p [j i]) (p [i k])))))))))
-
-
+  (def p (ref {}))
+  (doseq [i candidates]
+    (doseq [j candidates :when (not= i j)]
+      (dosync (alter p assoc [i j]
+                     (if (> (defeats [i j]) (defeats [j i]))
+                       (defeats [i j])
+                       0)))))
+    (doseq [i candidates]
+      (doseq [j candidates :when (not= i j)]
+        (doseq [k candidates :when (and (not= k j) (not= k i))]
+              (dosync (alter p assoc [j k] (max (@p [j k]) (min (@p [j i]) (@p [i k]))))))))
+  @p)
 
 ; vim: tw=80
 ; intended to be viewed with a window width of 108 columns
