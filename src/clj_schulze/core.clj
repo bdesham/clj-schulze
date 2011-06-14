@@ -164,16 +164,16 @@
   candidates."
   [defeats candidates]
   (def p (ref {}))
-  (doseq [i candidates]
-    (doseq [j candidates :when (not= i j)]
-      (dosync (alter p assoc [i j]
-                     (if (> (defeats [i j]) (defeats [j i]))
-                       (defeats [i j])
-                       0)))))
-    (doseq [i candidates]
-      (doseq [j candidates :when (not= i j)]
-        (doseq [k candidates :when (and (not= k j) (not= k i))]
-              (dosync (alter p assoc [j k] (max (@p [j k]) (min (@p [j i]) (@p [i k]))))))))
+  (doseq [i candidates,
+          j candidates :when (not= i j)]
+    (dosync (alter p assoc [i j]
+                   (if (> (defeats [i j]) (defeats [j i]))
+                     (defeats [i j])
+                     0))))
+  (doseq [i candidates,
+          j candidates :when (not= i j),
+          k candidates :when (and (not= k j) (not= k i))]
+    (dosync (alter p assoc [j k] (max (@p [j k]) (min (@p [j i]) (@p [i k]))))))
   @p)
 
 ; vim: tw=80
