@@ -126,6 +126,16 @@
                                 loser (flatten-sets (rest b))]
                             [winner loser]))))))
 
+(defn add-missing-pairs
+  "Ensures that every possible pair of candidates is represented in the hash of
+  pairwise defeats."
+  [defeats candidates]
+  (merge-with +
+              (apply conj {} (for [a candidates,
+                                   b candidates :when (not= a b)]
+                               {[a b] 0}))
+              defeats))
+
 (defn total-pairwise-defeats
   "Takes a (counted) hash of ballots and returns a counted hash of the pairwise
   defeats.
@@ -143,21 +153,13 @@
   individually with a number of occurrences
 
   4. Combine all of the resulting hashes so that we have the total number of
-  occurrences for each pairwise defeat"
+  occurrences for each pairwise defeat
+  
+  5. Add any missing pair entries (unlikely to be needed in any real election)"
   [ballots]
-  (apply merge-with +
-         (assoc-value-with-each
-           (change-first-elements pairwise-defeats (seq ballots)))))
-
-(defn add-missing-pairs
-  "Ensures that every possible pair of candidates is represented in the hash of
-  pairwise defeats."
-  [defeats candidates]
-  (merge-with +
-              (apply conj {} (for [a candidates,
-                                   b candidates :when (not= a b)]
-                               {[a b] 0}))
-              defeats))
+  (add-missing-pairs (apply merge-with +
+                            (assoc-value-with-each
+                              (change-first-elements pairwise-defeats (seq ballots))))))
 
 (defn strongest-paths
   "Calculates the strength of the strongest path between each pair of
