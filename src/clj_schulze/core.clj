@@ -12,10 +12,15 @@
 ;; # Utility functions
 
 (defn flatten-sets
-  "Like flatten, but pulls elements out of sets instead of sequences."
+  "Takes a vector of keywords and sets (where the sets contain more keywords)
+  and pulls all of the keywords out of the set, leaving just a sequence of
+  keywords. (If there are nested sets then there will be sets in the sequence
+  returned by this function.)"
   [v]
-  (filter (complement set?)
-          (rest (tree-seq set? seq (set v)))))
+  (flatten (map (fn [x] (cond
+                          (keyword? x) [x]
+                          (set? x) (vec x)))
+                v)))
 
 ; with thanks to gfrlog in #clojure
 (defn assoc-value-with-each
@@ -41,7 +46,11 @@
 (defn valid-ballot?
   "Make sure that the ballot is a vector; contains no duplicate entries,
   including in nested sets; and contains only entries which appear in the set of
-  candidates."
+  candidates.
+  
+  (Note that it's unnecessary to have a check like `(every? keyword? fb)`
+  because we make sure that everything in `fb` is in `candidates`, and
+  `candidates` can contain only keywords.)"
   [ballot candidates]
   (and (vector? ballot)
        (when-let [fb (flatten-sets ballot)]
@@ -69,24 +78,22 @@
 
 (defn canonical-element
   "Return a ballot element, converted to canonical form. This means that
-  keywords are wrapped in sets and sets are flattened."
+  keywords are wrapped in sets; sets are untouched."
   [element]
   (if (keyword? element)
     (set (vector element))
-    (set (flatten-sets element))))
+    element))
 
 (defn valid-element?
-  "Make sure that a ballot element is either a keyword or a set. In the latter
-  case, make sure that the set isn't something daft like #{#{}} or #{#{#{}}}."
+  "Make sure that a ballot element is either a keyword or a nonempty set."
   [element]
-  (or (keyword element)
-      (and (seq element)
-           (seq (flatten-sets element)))))
+  (or (keyword? element)
+      (and (set? element)
+           (seq element))))
 
 (defn canonical-ballot
-  "Return the ballot with the following changes: all keywords not in a set are
-  converted to one-element sets; any nested sets (?!) are flattened; empty sets
-  are removed."
+  "Return the ballot such that all keywords not in a set are converted to
+  one-element sets and empty sets are removed."
   [ballot]
   (map canonical-element (filter valid-element? ballot)))
 

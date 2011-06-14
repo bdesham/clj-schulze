@@ -56,13 +56,12 @@ Before any processing, each ballot is converted to a canonical form through the 
 
 1. All candidates not included in the ballot are added as shown in the example above.
 2. Any empty sets (i.e. `#{}`) in the ballot are removed.
-3. Any nested sets are flattened out, e.g. `#{:b #{:c :d}}` becomes `#{:b :c :d}`.  (It’s not clear why you would have such a structure in the first place…)
-4. Any “bare” elements are put into single-element sets, so that the vector consists entirely of sets.
+3. Any “bare” elements are put into single-element sets, so that the vector consists entirely of sets.
 
 Given the example set of candidates above, the canonical form of the ballot
 
 ```clojure
-[:a #{:b #{:e}} #{} #{:d}]
+[:a #{:b :e} #{} #{:d}]
 ```
 
 is
@@ -70,6 +69,8 @@ is
 ```clojure
 [#{:a} #{:b :e} #{:d} #{:c}]
 ```
+
+No nesting of sets is permitted.
 
 ## Further reading
 
