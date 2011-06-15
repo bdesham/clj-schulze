@@ -18,7 +18,7 @@
   returned by this function.)"
   [v]
   (flatten (map (fn [x] (cond
-                          (keyword? x) [x]
+                          (keyword? x) x
                           (set? x) (vec x)))
                 v)))
 
@@ -122,18 +122,18 @@
    (if (empty? (rest b))
      s
      (recur (rest b)
-            (apply conj s (for [winner (seq (first b)),
-                                loser (flatten-sets (rest b))]
-                            [winner loser]))))))
+            (into s (for [winner (seq (first b)),
+                          loser (flatten-sets (rest b))]
+                      [winner loser]))))))
 
 (defn add-missing-pairs
   "Ensures that every possible pair of candidates is represented in the hash of
   pairwise defeats."
   [defeats candidates]
   (merge-with +
-              (apply conj {} (for [a candidates,
-                                   b candidates :when (not= a b)]
-                               {[a b] 0}))
+              (into {} (for [a candidates,
+                             b candidates :when (not= a b)]
+                         {[a b] 0}))
               defeats))
 
 (defn total-pairwise-defeats
