@@ -171,13 +171,12 @@
   "Calculates the strength of the strongest path between each pair of
   candidates."
   [defeats candidates]
-  (def p (ref {}))
-  (doseq [i candidates,
-          j candidates :when (not= i j)]
-    (dosync (alter p assoc [i j]
-                   (if (> (defeats [i j]) (defeats [j i]))
-                     (defeats [i j])
-                     0))))
+  (def p (ref
+           (into {} (for [i candidates,
+                          j candidates :when (not= i j)]
+                      {[i j] (if (> (defeats [i j]) (defeats [j i]))
+                               (defeats [i j])
+                               0)}))))
   (doseq [i candidates,
           j candidates :when (not= i j),
           k candidates :when (and (not= k j) (not= k i))]
