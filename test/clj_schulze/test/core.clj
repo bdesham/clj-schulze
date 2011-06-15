@@ -250,3 +250,32 @@
                    [:d :a] 9, [:d :b] 13, [:d :c] 20, [:d :e] 30,
                    [:e :a] 9, [:e :b] 11, [:e :c] 20, [:e :d] 0}))
            (is (= winner :b))))
+
+; From "A New Monotonic, Clone-Independent, Reversal-Symmetric, and Condorcet-
+; Consistent Single-Winner Election Method" by Markus Schulze, available from
+; http://m-schulze.webhop.net/
+(deftest schulze-example6
+         (let [candidates #{:a :b :c :d},
+               ballots (concat (repeat 6 [:a :b :c :d])
+                               (repeat 8 [#{:a :b} #{:c :d}])
+                               (repeat 8 [#{:a :c} #{:b :d}])
+                               (repeat 18 [#{:a :c} :d :b])
+                               (repeat 8 [#{:a :c :d} :b])
+                               (repeat 40 [:b #{:a :c :d}])
+                               (repeat 4 [:c :b :d :a])
+                               (repeat 9 [:c :d :a :b])
+                               (repeat 8 [#{:c :d} #{:a :b}])
+                               (repeat 14 [:d :a :b :c])
+                               (repeat 11 [:d :b :c :a])
+                               (repeat 4 [:d :c :a :b])),
+               defeats (total-pairwise-defeats
+                         (validate-and-canonicalize ballots candidates)
+                         candidates),
+               paths (strongest-paths defeats candidates),
+               winner (schulze-winner paths candidates)]
+           (is (= defeats
+                  {[:a :b] 67, [:a :c] 28, [:a :d] 40,
+                   [:b :a] 55, [:b :c] 79, [:b :d] 58,
+                   [:c :a] 36, [:c :b] 59, [:c :d] 45,
+                   [:d :a] 50, [:d :b] 72, [:d :c] 29}))
+           (is (= winner :d))))
