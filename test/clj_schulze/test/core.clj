@@ -26,23 +26,24 @@
          (is (true? (valid-candidates? #{:a :b :c :d}))))
 
 (deftest canonical-ballots
-         (is (= (canonical-ballot [:a :b :c :d :e])
-                [#{:a} #{:b} #{:c} #{:d} #{:e}]))
-         (is (= (canonical-ballot [:a #{:b :c} :d :e])
-                [#{:a} #{:c :b} #{:d} #{:e}]))
-         (is (= (canonical-ballot [:a #{:b :c} #{:d} :e])
-                [#{:a} #{:c :b} #{:d} #{:e}]))
-         (is (= (canonical-ballot [:a #{:b :c} #{} :d :e])
-                [#{:a} #{:c :b} #{:d} #{:e}]))
-         (is (= (canonical-ballot [#{:a :b :c :d :e}])
-                [#{:a :b :c :d :e}])))
+         (let [candidates #{:a :b :c :d :e}]
+           (is (= (canonical-ballot [:a :b :c :d :e] candidates)
+                  [#{:a} #{:b} #{:c} #{:d} #{:e}]))
+           (is (= (canonical-ballot [:a #{:b :c} :d :e] candidates)
+                  [#{:a} #{:c :b} #{:d} #{:e}]))
+           (is (= (canonical-ballot [:a #{:b :c} #{:d} :e] candidates)
+                  [#{:a} #{:c :b} #{:d} #{:e}]))
+           (is (= (canonical-ballot [:a #{:b :c} #{} :d :e] candidates)
+                  [#{:a} #{:c :b} #{:d} #{:e}]))
+           (is (= (canonical-ballot [#{:a :b :c :d :e}] candidates)
+                  [#{:a :b :c :d :e}]))))
 
 (deftest valid-and-canonical
          (is (= (validate-and-canonicalize
-                  [[:a :b :c :d],
-                   [:a #{:b :c} :d],
-                   [#{:b :e} :c],
-                   [:b :a :e]]
+                  {[:a :b :c :d] 1,
+                   [:a #{:b :c} :d] 1,
+                   [#{:b :e} :c] 1,
+                   [:b :a :e] 1}
                   #{:a :b :c :d :e})
                 {[#{:a} #{:b} #{:c} #{:d} #{:e}] 1,
                  [#{:a} #{:c :b} #{:d} #{:e}] 1,
@@ -53,19 +54,19 @@
 ; http://en.wikipedia.org/w/index.php?title=Schulze_method&oldid=432829763
 (deftest wikipedia-example
          (let [candidates #{:a :b :c :d :e},
-               ballots (concat (repeat 5 [:a :c :b :e :d])
-                                (repeat 5 [:a :d :e :c :b])
-                                (repeat 8 [:b :e :d :a :c])
-                                (repeat 3 [:c :a :b :e :d])
-                                (repeat 7 [:c :a :e :b :d])
-                                (repeat 2 [:c :b :a :d :e])
-                                (repeat 7 [:d :c :e :b :a])
-                                (repeat 8 [:e :b :a :d :c])),
+               ballots {[:a :c :b :e :d] 5,
+                        [:a :d :e :c :b] 5,
+                        [:b :e :d :a :c] 8,
+                        [:c :a :b :e :d] 3,
+                        [:c :a :e :b :d] 7,
+                        [:c :b :a :d :e] 2,
+                        [:d :c :e :b :a] 7,
+                        [:e :b :a :d :c] 8},
                defeats (total-pairwise-defeats
                          (validate-and-canonicalize ballots candidates)
                          candidates),
                paths (strongest-paths defeats candidates),
-               winner (schulze-winner paths candidates)]
+               winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 20, [:a :c] 26, [:a :d] 30, [:a :e] 22,
                    [:b :a] 25, [:b :c] 16, [:b :d] 33, [:b :e] 18,
@@ -85,16 +86,16 @@
 ; http://m-schulze.webhop.net/
 (deftest schulze-example1
          (let [candidates #{:a :b :c :d},
-               ballots (concat (repeat 8 [:a :c :d :b])
-                               (repeat 2 [:b :a :d :c])
-                               (repeat 4 [:c :d :b :a])
-                               (repeat 4 [:d :b :a :c])
-                               (repeat 3 [:d :c :b :a])),
+               ballots {[:a :c :d :b] 8,
+                        [:b :a :d :c] 2,
+                        [:c :d :b :a] 4,
+                        [:d :b :a :c] 4,
+                        [:d :c :b :a] 3},
                defeats (total-pairwise-defeats
                          (validate-and-canonicalize ballots candidates)
                          candidates),
                paths (strongest-paths defeats candidates),
-               winner (schulze-winner paths candidates)]
+               winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 8, [:a :c] 14, [:a :d] 10,
                    [:b :a] 13, [:b :c] 6, [:b :d] 2,
@@ -107,15 +108,15 @@
 ; http://m-schulze.webhop.net/
 (deftest schulze-example2
          (let [candidates #{:a :b :c :d},
-               ballots (concat (repeat 3 [:a :b :c :d])
-                               (repeat 2 [:c :b :d :a])
-                               (repeat 2 [:d :a :b :c])
-                               (repeat 2 [:d :b :c :a])),
+               ballots {[:a :b :c :d] 3,
+                        [:c :b :d :a] 2,
+                        [:d :a :b :c] 2,
+                        [:d :b :c :a] 2},
                defeats (total-pairwise-defeats
                          (validate-and-canonicalize ballots candidates)
                          candidates),
                paths (strongest-paths defeats candidates),
-               winner (schulze-winner paths candidates)]
+               winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 5, [:a :c] 5, [:a :d] 3,
                    [:b :a] 4, [:b :c] 7, [:b :d] 5,
@@ -128,16 +129,16 @@
 ; http://m-schulze.webhop.net/
 (deftest schulze-example3
          (let [candidates #{:a :b :c :d},
-               ballots (concat (repeat 6 [:a :b :c :d])
-                               (repeat 12 [:a :c :d :b])
-                               (repeat 21 [:b :c :a :d])
-                               (repeat 9 [:c :d :b :a])
-                               (repeat 15 [:d :b :a :c])),
+               ballots {[:a :b :c :d] 6,
+                        [:a :c :d :b] 12,
+                        [:b :c :a :d] 21,
+                        [:c :d :b :a] 9,
+                        [:d :b :a :c] 15},
                defeats (total-pairwise-defeats
                          (validate-and-canonicalize ballots candidates)
                          candidates),
                paths (strongest-paths defeats candidates),
-               winner (schulze-winner paths candidates)]
+               winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 18, [:a :c] 33, [:a :d] 39,
                    [:b :a] 45, [:b :c] 42, [:b :d] 27,
@@ -150,18 +151,18 @@
 ; http://m-schulze.webhop.net/
 (deftest schulze-example4-situation1
          (let [candidates #{:a :b :c :d :e :f},
-               ballots (concat (repeat 3 [:a :d :e :b :c :f])
-                               (repeat 3 [:b :f :e :c :d :a])
-                               (repeat 4 [:c :a :b :f :d :e])
-                               (repeat 1 [:d :b :c :e :f :a])
-                               (repeat 4 [:d :e :f :a :b :c])
-                               (repeat 2 [:e :c :b :d :f :a])
-                               (repeat 2 [:f :a :c :d :b :e])),
+               ballots {[:a :d :e :b :c :f] 3,
+                        [:b :f :e :c :d :a] 3,
+                        [:c :a :b :f :d :e] 4,
+                        [:d :b :c :e :f :a] 1,
+                        [:d :e :f :a :b :c] 4,
+                        [:e :c :b :d :f :a] 2,
+                        [:f :a :c :d :b :e] 2},
                defeats (total-pairwise-defeats
                          (validate-and-canonicalize ballots candidates)
                          candidates),
                paths (strongest-paths defeats candidates),
-               winner (schulze-winner paths candidates)]
+               winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 13, [:a :c] 9, [:a :d] 9, [:a :e] 9, [:a :f] 7,
                    [:b :a] 6, [:b :c] 11, [:b :d] 9, [:b :e] 10, [:b :f] 13,
@@ -176,19 +177,19 @@
 ; http://m-schulze.webhop.net/
 (deftest schulze-example4-situation2
          (let [candidates #{:a :b :c :d :e :f},
-               ballots (concat (repeat 3 [:a :d :e :b :c :f])
-                               (repeat 3 [:b :f :e :c :d :a])
-                               (repeat 4 [:c :a :b :f :d :e])
-                               (repeat 1 [:d :b :c :e :f :a])
-                               (repeat 4 [:d :e :f :a :b :c])
-                               (repeat 2 [:e :c :b :d :f :a])
-                               (repeat 2 [:f :a :c :d :b :e])
-                               (repeat 2 [:a :e :f :c :b :d])),
+               ballots {[:a :d :e :b :c :f] 3,
+                        [:b :f :e :c :d :a] 3,
+                        [:c :a :b :f :d :e] 4,
+                        [:d :b :c :e :f :a] 1,
+                        [:d :e :f :a :b :c] 4,
+                        [:e :c :b :d :f :a] 2,
+                        [:f :a :c :d :b :e] 2,
+                        [:a :e :f :c :b :d] 2},
                defeats (total-pairwise-defeats
                          (validate-and-canonicalize ballots candidates)
                          candidates),
                paths (strongest-paths defeats candidates),
-               winner (schulze-winner paths candidates)]
+               winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 15, [:a :c] 11, [:a :d] 11, [:a :e] 11, [:a :f] 9,
                    [:b :a] 6, [:b :c] 11, [:b :d] 11, [:b :e] 10, [:b :f] 13,
@@ -203,20 +204,20 @@
 ; http://m-schulze.webhop.net/
 (deftest schulze-example5-situation1
          (let [candidates #{:a :b :c :d},
-               ballots (concat (repeat 3 [:a :b :d :c])
-                               (repeat 5 [:a :d :b :c])
-                               (repeat 1 [:a :d :c :b])
-                               (repeat 2 [:b :a :d :c])
-                               (repeat 2 [:b :d :c :a])
-                               (repeat 4 [:c :a :b :d])
-                               (repeat 6 [:c :b :a :d])
-                               (repeat 2 [:d :b :c :a])
-                               (repeat 5 [:d :c :a :b])),
+               ballots {[:a :b :d :c] 3,
+                        [:d :c :a :b] 5,
+                        [:b :d :c :a] 2,
+                        [:c :a :b :d] 4,
+                        [:a :d :b :c] 5,
+                        [:a :d :c :b] 1,
+                        [:c :b :a :d] 6,
+                        [:b :a :d :c] 2,
+                        [:d :b :c :a] 2},
                defeats (total-pairwise-defeats
                          (validate-and-canonicalize ballots candidates)
                          candidates),
                paths (strongest-paths defeats candidates),
-               winner (schulze-winner paths candidates)]
+               winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 18, [:a :c] 11, [:a :d] 21,
                    [:b :a] 12, [:b :c] 14, [:b :d] 17,
@@ -229,20 +230,20 @@
 ; http://m-schulze.webhop.net/
 (deftest schulze-example5-situation2
          (let [candidates #{:a :b :c :d :e},
-               ballots (concat (repeat 3 [:a :b :d :e :c])
-                               (repeat 5 [:a :d :e :b :c])
-                               (repeat 1 [:a :d :e :c :b])
-                               (repeat 2 [:b :a :d :e :c])
-                               (repeat 2 [:b :d :e :c :a])
-                               (repeat 4 [:c :a :b :d :e])
-                               (repeat 6 [:c :b :a :d :e])
-                               (repeat 2 [:d :b :e :c :a])
-                               (repeat 5 [:d :e :c :a :b])),
+               ballots {[:a :b :d :e :c] 3,
+                        [:a :d :e :b :c] 5,
+                        [:c :b :a :d :e] 6,
+                        [:b :d :e :c :a] 2,
+                        [:a :d :e :c :b] 1,
+                        [:d :e :c :a :b] 5,
+                        [:b :a :d :e :c] 2,
+                        [:c :a :b :d :e] 4,
+                        [:d :b :e :c :a] 2},
                defeats (total-pairwise-defeats
                          (validate-and-canonicalize ballots candidates)
                          candidates),
                paths (strongest-paths defeats candidates),
-               winner (schulze-winner paths candidates)]
+               winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 18, [:a :c] 11, [:a :d] 21, [:a :e] 21,
                    [:b :a] 12, [:b :c] 14, [:b :d] 17, [:b :e] 19,
@@ -256,23 +257,23 @@
 ; http://m-schulze.webhop.net/
 (deftest schulze-example6
          (let [candidates #{:a :b :c :d},
-               ballots (concat (repeat 6 [:a :b :c :d])
-                               (repeat 8 [#{:a :b} #{:c :d}])
-                               (repeat 8 [#{:a :c} #{:b :d}])
-                               (repeat 18 [#{:a :c} :d :b])
-                               (repeat 8 [#{:a :c :d} :b])
-                               (repeat 40 [:b #{:a :c :d}])
-                               (repeat 4 [:c :b :d :a])
-                               (repeat 9 [:c :d :a :b])
-                               (repeat 8 [#{:c :d} #{:a :b}])
-                               (repeat 14 [:d :a :b :c])
-                               (repeat 11 [:d :b :c :a])
-                               (repeat 4 [:d :c :a :b])),
+               ballots {[:d :c :a :b] 4,
+                        [#{:a :b} #{:c :d}] 8,
+                        [:c :d :a :b] 9,
+                        [:a :b :c :d] 6,
+                        [#{:a :c} #{:b :d}] 8,
+                        [#{:a :c :d} :b] 8,
+                        [#{:a :c} :d :b] 18,
+                        [:b #{:a :c :d}] 40,
+                        [:d :a :b :c] 14,
+                        [:c :b :d :a] 4,
+                        [#{:c :d} #{:a :b}] 8,
+                        [:d :b :c :a] 11},
                defeats (total-pairwise-defeats
                          (validate-and-canonicalize ballots candidates)
                          candidates),
                paths (strongest-paths defeats candidates),
-               winner (schulze-winner paths candidates)]
+               winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 67, [:a :c] 28, [:a :d] 40,
                    [:b :a] 55, [:b :c] 79, [:b :d] 58,

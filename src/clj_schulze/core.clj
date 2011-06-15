@@ -41,6 +41,19 @@
   [f vv]
   (map (fn [[a b]] [(f a) b]) vv))
 
+(defn safe-modify-keys
+  "Applies the given function to each key in the given map. Returns the result
+  as a list, not a map, in case some of the keys end up with the same value."
+  [f coll]
+  (into '() (for [[k v] coll] {(f k) v})))
+
+(defn safe-modify-and-add
+  "Applies the given function to each key in the given map. If two or more keys
+  are the same after going through the function, their corresponding values are
+  added."
+  [f coll]
+  (apply merge-with + (safe-modify-keys f coll)))
+
 ;; # Validation, canonicalization, etc.
 
 (defn valid-ballot?
@@ -58,9 +71,9 @@
               (every? #(candidates %) fb)))))
 
 (defn valid-ballots?
-  "Check every ballot in a sequence with validate-ballot."
+  "Check every ballot in the keys of `ballots` with validate-ballot."
   [ballots candidates]
-  (every? #(valid-ballot? % candidates) ballots))
+  (every? #(valid-ballot? % candidates) (keys ballots)))
 
 (defn valid-candidates?
   "Make sure that the candidates set *is* a set and consists entirely of
@@ -94,22 +107,21 @@
 (defn canonical-ballot
   "Return the ballot such that all keywords not in a set are converted to
   one-element sets and empty sets are removed."
-  [ballot]
-  (map canonical-element (filter valid-element? ballot)))
+  [ballot candidates]
+  (map canonical-element (filter valid-element?
+                                 (add-missing-candidates ballot candidates))))
 
 (defn validate-and-canonicalize
   "Takes a vector of ballots and a set of candidates. Validates the candidates
   set. Validates each ballot, adds any missing candidates, and converts it to
-  canonical form. Ballots are passed through `frequencies` on their way out. If
-  the candidates or the ballots are not valid, throws an exception."
+  canonical form. If the candidates or the ballots are not valid, throws an
+  exception."
   [ballots candidates]
   (when-not (valid-candidates? candidates)
     (throw (Exception. "Candidates set is not valid")))
   (when-not (valid-ballots? ballots candidates)
     (throw (Exception. "Ballots vector is not valid")))
-  (frequencies
-    (map (comp canonical-ballot #(add-missing-candidates % candidates))
-         ballots)))
+  (safe-modify-and-add #(canonical-ballot % candidates) ballots))
 
 ;; # Voting stuff
 
@@ -126,16 +138,6 @@
                           loser (flatten-sets (rest b))]
                       [winner loser]))))))
 
-(defn add-missing-pairs
-  "Ensures that every possible pair of candidates is represented in the hash of
-  pairwise defeats."
-  [defeats candidates]
-  (merge-with +
-              (into {} (for [a candidates,
-                             b candidates :when (not= a b)]
-                         {[a b] 0}))
-              defeats))
-
 (defn total-pairwise-defeats
   "Takes a (counted) hash of ballots and returns a counted hash of the pairwise
   defeats.
@@ -148,20 +150,22 @@
 
   2. Look at each first element (i.e. ballot) and call pairwise-defeats on it
 
-  3. Split the vectors so that instead of a bunch of pairwise defeats each being
+  3. Split the vectors so that instead of a *list* of pairwise defeats being
   associated with a number of occurrences, we associate each pairwise defeat
-  individually with a number of occurrences
+  *individually* with a number of occurrences
 
   4. Combine all of the resulting hashes so that we have the total number of
   occurrences for each pairwise defeat
   
   5. Add any missing pair entries (unlikely to be needed in any real election)"
   [ballots candidates]
-  (add-missing-pairs (apply merge-with +
-                            (assoc-value-with-each
-                              (change-first-elements pairwise-defeats
-                                                     (seq ballots))))
-                     candidates))
+  (let [zeroes (into {} (for [a candidates,
+                              b candidates :when (not= a b)]
+                          {[a b] 0})),
+        defeats (assoc-value-with-each
+                  (change-first-elements pairwise-defeats
+                                         (seq ballots)))]
+    (apply merge-with + zeroes defeats)))
 
 (defn strongest-paths
   "Calculates the strength of the strongest path between each pair of
