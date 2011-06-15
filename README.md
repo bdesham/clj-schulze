@@ -83,11 +83,7 @@ For more information on the Schulze method, see
 
 clj-schulze is developed by Benjamin Esham ([e-mail](mailto:bdesham@gmail.com)).  The [project website](https://github.com/bdesham/clj-schulze) is hosted on GitHub.
 
-### Release history
-
 Beginning with version 1.0.0, this project will use the [Semantic Versioning](http://semver.org/) specification by Tom Preston-Werner.
-
-* 2011-05-29: Project started
 
 ### License
 
