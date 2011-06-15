@@ -159,7 +159,8 @@
   [ballots candidates]
   (add-missing-pairs (apply merge-with +
                             (assoc-value-with-each
-                              (change-first-elements pairwise-defeats (seq ballots))))
+                              (change-first-elements pairwise-defeats
+                                                     (seq ballots))))
                      candidates))
 
 (defn strongest-paths
@@ -184,7 +185,7 @@
   (every? #(>= (p [c %]) (p [% c]))
           (disj candidates c)))
 
-(defn schulze-winner
+(defn winner
   "Examines the strongest paths between pairs of candidates and determines the
   winner(s). Returns a single keyword if there is a unique winner, or a set of
   keywords otherwise."
@@ -194,6 +195,16 @@
     (if (= 1 (count winners))
       (first winners)
       winners)))
+
+(defn schulze-winner
+  "Runs ballots and candidates through all necessary processing and checks.
+  Returns a single keyword if there is a unique winner, or a set of keywords
+  otherwise."
+  [ballots candidates]
+  (let [vballots (validate-and-canonicalize ballots candidates),
+        defeats (total-pairwise-defeats vballots candidates),
+        paths (strongest-paths defeats candidates)]
+    (schulze-winner paths candidates)))
 
 ; vim: tw=80
 ; intended to be viewed with a window width of 108 columns
