@@ -41,18 +41,14 @@
   [f vv]
   (map (fn [[a b]] [(f a) b]) vv))
 
-(defn safe-modify-keys
-  "Applies the given function to each key in the given map. Returns the result
-  as a list, not a map, in case some of the keys end up with the same value."
-  [f coll]
-  (into '() (for [[k v] coll] {(f k) v})))
-
-(defn safe-modify-and-add
-  "Applies the given function to each key in the given map. If two or more keys
+(defn modify-keys-and-combine
+  "Applies the function `keyf` to each key in the given map. If two or more keys
   are the same after going through the function, their corresponding values are
-  added."
-  [f coll]
-  (apply merge-with + (safe-modify-keys f coll)))
+  combined using `combinef`. (`keyf` should take one argument and `combinef`
+  should take two.)"
+  [keyf combinef coll]
+  (apply merge-with combinef
+         (into [] (for [[k v] coll] {(keyf k) v}))))
 
 ;; # Validation, canonicalization, etc.
 
@@ -121,7 +117,7 @@
     (throw (Exception. "Candidates set is not valid")))
   (when-not (valid-ballots? ballots candidates)
     (throw (Exception. "Ballots vector is not valid")))
-  (safe-modify-and-add #(canonical-ballot % candidates) ballots))
+  (modify-keys-and-combine #(canonical-ballot % candidates) + ballots))
 
 ;; # Voting stuff
 
@@ -158,8 +154,9 @@
   occurrences for each pairwise defeat
   
   5. Add any missing pair entries (unlikely to be needed in any real election)"
-  [ballots candidates]
-  (let [zeroes (into {} (for [a candidates,
+  [ballots]
+  (let [candidates (set (flatten-sets (first (first ballots)))),
+        zeroes (into {} (for [a candidates,
                               b candidates :when (not= a b)]
                           {[a b] 0})),
         defeats (assoc-value-with-each
@@ -170,18 +167,19 @@
 (defn strongest-paths
   "Calculates the strength of the strongest path between each pair of
   candidates."
-  [defeats candidates]
-  (def p (ref
-           (into {} (for [i candidates,
-                          j candidates :when (not= i j)]
-                      {[i j] (if (> (defeats [i j]) (defeats [j i]))
-                               (defeats [i j])
-                               0)}))))
-  (doseq [i candidates,
-          j candidates :when (not= i j),
-          k candidates :when (and (not= k j) (not= k i))]
-    (dosync (alter p assoc [j k] (max (@p [j k]) (min (@p [j i]) (@p [i k]))))))
-  @p)
+  [defeats]
+  (let [candidates (set (flatten (keys defeats)))]
+    (def p (ref
+             (into {} (for [i candidates,
+                            j candidates :when (not= i j)]
+                        {[i j] (if (> (defeats [i j]) (defeats [j i]))
+                                 (defeats [i j])
+                                 0)}))))
+    (doseq [i candidates,
+            j candidates :when (not= i j),
+            k candidates :when (and (not= k j) (not= k i))]
+      (dosync (alter p assoc [j k] (max (@p [j k]) (min (@p [j i]) (@p [i k]))))))
+    @p))
 
 (defn potential-winner?
   [c p candidates]
@@ -205,9 +203,9 @@
   otherwise."
   [ballots candidates]
   (let [vballots (validate-and-canonicalize ballots candidates),
-        defeats (total-pairwise-defeats vballots candidates),
-        paths (strongest-paths defeats candidates)]
-    (schulze-winner paths candidates)))
+        defeats (total-pairwise-defeats vballots),
+        paths (strongest-paths defeats)]
+    (winner paths candidates)))
 
 ; vim: tw=80
 ; intended to be viewed with a window width of 108 columns

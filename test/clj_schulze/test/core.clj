@@ -63,9 +63,8 @@
                         [:d :c :e :b :a] 7,
                         [:e :b :a :d :c] 8},
                defeats (total-pairwise-defeats
-                         (validate-and-canonicalize ballots candidates)
-                         candidates),
-               paths (strongest-paths defeats candidates),
+                         (validate-and-canonicalize ballots candidates)),
+               paths (strongest-paths defeats),
                winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 20, [:a :c] 26, [:a :d] 30, [:a :e] 22,
@@ -92,9 +91,8 @@
                         [:d :b :a :c] 4,
                         [:d :c :b :a] 3},
                defeats (total-pairwise-defeats
-                         (validate-and-canonicalize ballots candidates)
-                         candidates),
-               paths (strongest-paths defeats candidates),
+                         (validate-and-canonicalize ballots candidates)),
+               paths (strongest-paths defeats),
                winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 8, [:a :c] 14, [:a :d] 10,
@@ -113,9 +111,8 @@
                         [:d :a :b :c] 2,
                         [:d :b :c :a] 2},
                defeats (total-pairwise-defeats
-                         (validate-and-canonicalize ballots candidates)
-                         candidates),
-               paths (strongest-paths defeats candidates),
+                         (validate-and-canonicalize ballots candidates)),
+               paths (strongest-paths defeats),
                winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 5, [:a :c] 5, [:a :d] 3,
@@ -135,9 +132,8 @@
                         [:c :d :b :a] 9,
                         [:d :b :a :c] 15},
                defeats (total-pairwise-defeats
-                         (validate-and-canonicalize ballots candidates)
-                         candidates),
-               paths (strongest-paths defeats candidates),
+                         (validate-and-canonicalize ballots candidates)),
+               paths (strongest-paths defeats),
                winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 18, [:a :c] 33, [:a :d] 39,
@@ -159,9 +155,8 @@
                         [:e :c :b :d :f :a] 2,
                         [:f :a :c :d :b :e] 2},
                defeats (total-pairwise-defeats
-                         (validate-and-canonicalize ballots candidates)
-                         candidates),
-               paths (strongest-paths defeats candidates),
+                         (validate-and-canonicalize ballots candidates)),
+               paths (strongest-paths defeats),
                winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 13, [:a :c] 9, [:a :d] 9, [:a :e] 9, [:a :f] 7,
@@ -186,9 +181,8 @@
                         [:f :a :c :d :b :e] 2,
                         [:a :e :f :c :b :d] 2},
                defeats (total-pairwise-defeats
-                         (validate-and-canonicalize ballots candidates)
-                         candidates),
-               paths (strongest-paths defeats candidates),
+                         (validate-and-canonicalize ballots candidates)),
+               paths (strongest-paths defeats),
                winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 15, [:a :c] 11, [:a :d] 11, [:a :e] 11, [:a :f] 9,
@@ -214,9 +208,8 @@
                         [:b :a :d :c] 2,
                         [:d :b :c :a] 2},
                defeats (total-pairwise-defeats
-                         (validate-and-canonicalize ballots candidates)
-                         candidates),
-               paths (strongest-paths defeats candidates),
+                         (validate-and-canonicalize ballots candidates)),
+               paths (strongest-paths defeats),
                winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 18, [:a :c] 11, [:a :d] 21,
@@ -240,9 +233,8 @@
                         [:c :a :b :d :e] 4,
                         [:d :b :e :c :a] 2},
                defeats (total-pairwise-defeats
-                         (validate-and-canonicalize ballots candidates)
-                         candidates),
-               paths (strongest-paths defeats candidates),
+                         (validate-and-canonicalize ballots candidates)),
+               paths (strongest-paths defeats),
                winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 18, [:a :c] 11, [:a :d] 21, [:a :e] 21,
@@ -270,9 +262,8 @@
                         [#{:c :d} #{:a :b}] 8,
                         [:d :b :c :a] 11},
                defeats (total-pairwise-defeats
-                         (validate-and-canonicalize ballots candidates)
-                         candidates),
-               paths (strongest-paths defeats candidates),
+                         (validate-and-canonicalize ballots candidates)),
+               paths (strongest-paths defeats),
                winner (winner paths candidates)]
            (is (= defeats
                   {[:a :b] 67, [:a :c] 28, [:a :d] 40,
