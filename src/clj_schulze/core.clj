@@ -156,10 +156,11 @@
   occurrences for each pairwise defeat
   
   5. Add any missing pair entries (unlikely to be needed in any real election)"
-  [ballots]
+  [ballots candidates]
   (add-missing-pairs (apply merge-with +
                             (assoc-value-with-each
-                              (change-first-elements pairwise-defeats (seq ballots))))))
+                              (change-first-elements pairwise-defeats (seq ballots))))
+                     candidates))
 
 (defn strongest-paths
   "Calculates the strength of the strongest path between each pair of
@@ -177,6 +178,22 @@
           k candidates :when (and (not= k j) (not= k i))]
     (dosync (alter p assoc [j k] (max (@p [j k]) (min (@p [j i]) (@p [i k]))))))
   @p)
+
+(defn potential-winner?
+  [c p candidates]
+  (every? #(>= (p [c %]) (p [% c]))
+          (disj candidates c)))
+
+(defn schulze-winner
+  "Examines the strongest paths between pairs of candidates and determines the
+  winner(s). Returns a single keyword if there is a unique winner, or a set of
+  keywords otherwise."
+  [p candidates]
+  (let [winners (set (filter #(potential-winner? % p candidates)
+                             candidates))]
+    (if (= 1 (count winners))
+      (first winners)
+      winners)))
 
 ; vim: tw=80
 ; intended to be viewed with a window width of 108 columns
