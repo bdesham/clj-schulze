@@ -1,3 +1,11 @@
+; clj-schulze
+; A Clojure implementation of the Schulze voting method.
+;
+; https://github.com/bdesham/clj-schulze
+;
+; Copyright (c) 2011, Benjamin D. Esham.  This program is released under the MIT
+; license, which can be found in the "License" section of the file README.md.
+
 (ns clj-schulze.test.core
   (:use [clj-schulze.core] :reload)
   (:use [clojure.test]))
@@ -80,7 +88,7 @@
                    [:e :a] 25, [:e :b] 28, [:e :c] 28, [:e :d] 31}))
            (is (= winner :e))))
 
-; From "A New Monotonic, Clone-Independent, Reversal-Symmetric, and Condorcet-
+; From "A New Monotonic, Clone-Independent, Reversal Symmetric, and Condorcet-
 ; Consistent Single-Winner Election Method" by Markus Schulze, available from
 ; http://m-schulze.webhop.net/
 (deftest schulze-example1
@@ -101,7 +109,7 @@
                    [:d :a] 11, [:d :b] 19, [:d :c] 9}))
            (is (= winner :d))))
 
-; From "A New Monotonic, Clone-Independent, Reversal-Symmetric, and Condorcet-
+; From "A New Monotonic, Clone-Independent, Reversal Symmetric, and Condorcet-
 ; Consistent Single-Winner Election Method" by Markus Schulze, available from
 ; http://m-schulze.webhop.net/
 (deftest schulze-example2
@@ -121,7 +129,7 @@
                    [:d :a] 6, [:d :b] 4, [:d :c] 4}))
            (is (= winner #{:b :d}))))
 
-; From "A New Monotonic, Clone-Independent, Reversal-Symmetric, and Condorcet-
+; From "A New Monotonic, Clone-Independent, Reversal Symmetric, and Condorcet-
 ; Consistent Single-Winner Election Method" by Markus Schulze, available from
 ; http://m-schulze.webhop.net/
 (deftest schulze-example3
@@ -142,7 +150,7 @@
                    [:d :a] 24, [:d :b] 36, [:d :c] 15}))
            (is (= winner :b))))
 
-; From "A New Monotonic, Clone-Independent, Reversal-Symmetric, and Condorcet-
+; From "A New Monotonic, Clone-Independent, Reversal Symmetric, and Condorcet-
 ; Consistent Single-Winner Election Method" by Markus Schulze, available from
 ; http://m-schulze.webhop.net/
 (deftest schulze-example4-situation1
@@ -167,7 +175,7 @@
                    [:f :a] 12, [:f :b] 6, [:f :c] 9, [:f :d] 9, [:f :e] 9}))
            (is (= winner :a))))
 
-; From "A New Monotonic, Clone-Independent, Reversal-Symmetric, and Condorcet-
+; From "A New Monotonic, Clone-Independent, Reversal Symmetric, and Condorcet-
 ; Consistent Single-Winner Election Method" by Markus Schulze, available from
 ; http://m-schulze.webhop.net/
 (deftest schulze-example4-situation2
@@ -193,7 +201,7 @@
                    [:f :a] 12, [:f :b] 8, [:f :c] 11, [:f :d] 11, [:f :e] 9}))
            (is (= winner :d))))
 
-; From "A New Monotonic, Clone-Independent, Reversal-Symmetric, and Condorcet-
+; From "A New Monotonic, Clone-Independent, Reversal Symmetric, and Condorcet-
 ; Consistent Single-Winner Election Method" by Markus Schulze, available from
 ; http://m-schulze.webhop.net/
 (deftest schulze-example5-situation1
@@ -218,7 +226,7 @@
                    [:d :a] 9, [:d :b] 13, [:d :c] 20}))
            (is (= winner :a))))
 
-; From "A New Monotonic, Clone-Independent, Reversal-Symmetric, and Condorcet-
+; From "A New Monotonic, Clone-Independent, Reversal Symmetric, and Condorcet-
 ; Consistent Single-Winner Election Method" by Markus Schulze, available from
 ; http://m-schulze.webhop.net/
 (deftest schulze-example5-situation2
@@ -244,7 +252,7 @@
                    [:e :a] 9, [:e :b] 11, [:e :c] 20, [:e :d] 0}))
            (is (= winner :b))))
 
-; From "A New Monotonic, Clone-Independent, Reversal-Symmetric, and Condorcet-
+; From "A New Monotonic, Clone-Independent, Reversal Symmetric, and Condorcet-
 ; Consistent Single-Winner Election Method" by Markus Schulze, available from
 ; http://m-schulze.webhop.net/
 (deftest schulze-example6

@@ -36,7 +36,7 @@
           pairs))
 
 (defn change-first-elements
-  "Apply the function f to the first element of each of the given two-element
+  "Apply the function `f` to the first element of each of the given two-element
   vectors."
   [f vv]
   (map (fn [[a b]] [(f a) b]) vv))
@@ -86,8 +86,9 @@
   (conj ballot (difference candidates (flatten-sets ballot))))
 
 (defn canonical-element
-  "Return a ballot element, converted to canonical form. This means that
-  keywords are wrapped in sets; sets are untouched."
+  "Return a ballot element, converted to canonical form. (This just means that
+  keywords are wrapped in sets. Empty sets are taken care of in
+  `canonical-ballot`.)"
   [element]
   (if (keyword? element)
     (set (vector element))
@@ -122,9 +123,9 @@
 ;; # Voting stuff
 
 (defn pairwise-defeats
-  "Takes a ballot and returns a set of two-element vectors. Each vector
-  `[:a :b]` indicates that candidate a is preferred to candidate b. It is
-  intended that outside callers will use the single-argument form."
+  "Takes a ballot and returns a set of two-element vectors. Each vector `[:a
+  :b]` indicates that candidate a is preferred to candidate b. (Any outside
+  caller should use the single-argument form.)"
   ([b] (pairwise-defeats b #{}))
   ([b s]
    (if (empty? (rest b))
@@ -142,18 +143,16 @@
 
   1. Turn the input--a hash from ballots to occurrences--into a bunch of vectors
   where the first element is the ballot and the second is the number of
-  occurrences
+  occurrences.
 
-  2. Look at each first element (i.e. ballot) and call pairwise-defeats on it
+  2. Look at each first element (i.e. ballot) and call `pairwise-defeats` on it.
 
   3. Split the vectors so that instead of a *list* of pairwise defeats being
   associated with a number of occurrences, we associate each pairwise defeat
-  *individually* with a number of occurrences
+  *individually* with a number of occurrences.
 
   4. Combine all of the resulting hashes so that we have the total number of
-  occurrences for each pairwise defeat
-  
-  5. Add any missing pair entries (unlikely to be needed in any real election)"
+  occurrences for each pairwise defeat, adding any missing pairs along the way."
   [ballots]
   (let [candidates (set (flatten-sets (first (first ballots)))),
         zeroes (into {} (for [a candidates,
@@ -182,6 +181,9 @@
     @p))
 
 (defn potential-winner?
+  "Check to see whether this candidate is at least as good as any of the others.
+  Candidate A is at least as good as candidate B if the strength of the
+  strongest path from A to B is at least as great as that from B to A."
   [c p candidates]
   (every? #(>= (p [c %]) (p [% c]))
           (disj candidates c)))
