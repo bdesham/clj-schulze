@@ -99,13 +99,15 @@ For more information on the Schulze method, see
 
 clj-schulze is developed by [Benjamin Esham](http://www.bdesham.info). The [project website](https://github.com/bdesham/clj-schulze) is hosted on GitHub.
 
+Thanks go to the fine folks in #clojure for answering tons of questions!
+
 ### Release history
 
 Beginning with version 1.0.0, this project will use the [Semantic Versioning](http://semver.org/) specification by Tom Preston-Werner.
 
-* 0.9.2
+* 0.9.2 (2011-06-17)
 
-    Small fixes
+    Mark all functions except for `schulze-winner` as private. (Continue to test the now-private functions using a workaround.)
 
 * 0.9.1 (2011-06-15)
 

@@ -10,6 +10,13 @@
   (:use [clj-schulze.core] :reload)
   (:use [clojure.test]))
 
+(defn refer-private [ns] 
+  (doseq [[symbol var] (ns-interns ns)] 
+    (when (:private (meta var)) 
+      (intern *ns* symbol var)))) 
+
+(refer-private 'clj-schulze.core)
+
 (deftest ballot-validation
          (let [candidates #{:a :b :c :d}]
            (is (false? (valid-ballot? '(:a :b :c :d) candidates)))
