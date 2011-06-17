@@ -4,10 +4,10 @@ A Clojure implementation of the Schulze voting method.
 
 ## Usage
 
-The `schulze-winner` function is probably the only one you’ll need:
+This library provides a single public function, called `schulze-winner`:
 
 ```clojure
-(use '[clj-schulze :only schulze-winner])
+(use 'clj-schulze)
 
 (let [candidates #{:a :b :c},
       ballots {[:a :b :c] 3,
@@ -91,7 +91,7 @@ No nesting of sets is permitted.
 
 For more information on the Schulze method, see
 
-* [“A New Monotonic, Clone-Independent, Reversal Symmetric, and Condorcet-Consistent Single-Winner Election Method”](http://home.versanet.de/~chris1-schulze/schulze1.pdf) by Markus Schulze
+* [“A New Monotonic, Clone-Independent, Reversal Symmetric, and Condorcet-Consistent Single-Winner Election Method”](http://home.versanet.de/~chris1-schulze/schulze1.pdf) (PDF) by Markus Schulze
 * [“Schulze method” on Wikipedia](http://en.wikipedia.org/wiki/Schulze_method)
 * [Markus Schulze’s website on the Schulze method](http://m-schulze.webhop.net/)
 
