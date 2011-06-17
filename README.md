@@ -7,7 +7,7 @@ A Clojure implementation of the Schulze voting method.
 The `schulze-winner` function is probably the only one you’ll need:
 
 ```clojure
-(require '[clj-schulze :only schulze-winner])
+(use '[clj-schulze :only schulze-winner])
 
 (let [candidates #{:a :b :c},
       ballots {[:a :b :c] 3,
@@ -102,6 +102,10 @@ clj-schulze is developed by [Benjamin Esham](http://www.bdesham.info). The [proj
 ### Release history
 
 Beginning with version 1.0.0, this project will use the [Semantic Versioning](http://semver.org/) specification by Tom Preston-Werner.
+
+* 0.9.2
+
+    Small fixes
 
 * 0.9.1 (2011-06-15)
 
