@@ -7,7 +7,7 @@ A Clojure implementation of the Schulze voting method.
 This library provides a single public function, called `schulze-winner`:
 
 ```clojure
-(use 'clj-schulze)
+(use 'clj-schulze.core)
 
 (let [candidates #{:a :b :c},
       ballots {[:a :b :c] 3,
