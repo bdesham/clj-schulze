@@ -138,11 +138,11 @@
   "Takes a (counted) hash of ballots and returns a counted hash of the pairwise
   defeats.
   
-  The steps this function uses are, from inside to outside:
+  The steps this function uses are:
 
-  1. Turn the input--a hash from ballots to occurrences--into a bunch of vectors
-  where the first element is the ballot and the second is the number of
-  occurrences.
+  1. Turn the input--a hash from ballots to occurrences--into a vector of
+  vectors where the first elements are the ballots and the second elements are
+  the numbers of occurrences.
 
   2. Look at each first element (i.e. ballot) and call `pairwise-defeats` on it.
 
@@ -180,8 +180,8 @@
     @p))
 
 (defn- potential-winner?
-  "Check to see whether this candidate is at least as good as any of the others.
-  Candidate A is at least as good as candidate B if the strength of the
+  "Check to see whether this candidate is at least as good as each of the
+  others.  Candidate A is at least as good as candidate B if the strength of the
   strongest path from A to B is at least as great as that from B to A."
   [c p candidates]
   (every? #(>= (p [c %]) (p [% c]))
@@ -209,4 +209,3 @@
     (winner paths candidates)))
 
 ; vim: tw=80
-; intended to be viewed with a window width of 108 columns
