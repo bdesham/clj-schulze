@@ -1,7 +1,11 @@
+/target
+/lib
+/classes
+/checkouts
 pom.xml
-*jar
-docs
-lib
-classes
-.*.swo
-.*.swp
+*.jar
+*.class
+.lein-deps-sum
+.lein-failures
+.lein-plugins
+.*.s??

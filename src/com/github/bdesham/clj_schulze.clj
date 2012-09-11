@@ -6,7 +6,7 @@
 ; Copyright (c) 2011, Benjamin D. Esham.  This program is released under the MIT
 ; license, which can be found in the "License" section of the file README.md.
 
-(ns clj-schulze.core
+(ns com.github.bdesham.clj-schulze
   (:use [clojure.set :only (difference)]))
 
 ;; # Utility functions

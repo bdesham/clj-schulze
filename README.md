@@ -105,6 +105,10 @@ Thanks go to the fine folks in #clojure for answering tons of questions!
 
 Beginning with version 1.0.0, this project will use the [Semantic Versioning](http://semver.org/) specification by Tom Preston-Werner.
 
+* 0.9.4 (2012-09-11)
+
+    Update `project.clj`, use Clojure 1.4, and change the license to the preferred Clojure license, EPL.
+
 * 0.9.2 (2011-06-17)
 
     Mark all functions except for `schulze-winner` as private. (Continue to test the now-private functions using a workaround.)
@@ -123,8 +127,6 @@ Beginning with version 1.0.0, this project will use the [Semantic Versioning](ht
 
 ### License
 
-Copyright © 2011, Benjamin Esham. This software is released under the following version of the MIT license:
+Copyright © 2011–2012 Benjamin D. Esham (www.bdesham.info).
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following condition: the above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-**The software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.**
+This project is distributed under the Eclipse Public License, the same as that used by Clojure. A copy of the license is included as “epl-v10.html” in this distribution.
