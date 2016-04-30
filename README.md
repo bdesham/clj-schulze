@@ -2,6 +2,16 @@
 
 A Clojure implementation of the Schulze voting method.
 
+## Installation
+
+Add the following to the dependency list in your `project.clj`:
+
+    [com.github.bdesham/clj-schulze "0.9.4"]
+
+See [the Clojars page][Clojars] for instructions for Gradle and Maven.
+
+[Clojars]: https://clojars.org/com.github.bdesham/clj-schulze
+
 ## Usage
 
 This library provides a single public function, called `schulze-winner`:
