@@ -95,38 +95,29 @@ For more information on the Schulze method, see
 * [“Schulze method” on Wikipedia](http://en.wikipedia.org/wiki/Schulze_method)
 * [Markus Schulze’s website on the Schulze method](http://m-schulze.webhop.net/)
 
-## Project information
+## Author
 
-clj-schulze is developed by [Benjamin Esham](http://www.bdesham.info). The [project website](https://github.com/bdesham/clj-schulze) is hosted on GitHub.
+This library was written by [Benjamin Esham](https://esham.io).
+
+This project is [hosted on GitHub](https://github.com/bdesham/clj-schulze). Please feel free to submit pull requests.
 
 Thanks go to the fine folks in #clojure for answering tons of questions!
 
-### Release history
+## Version history
 
-Beginning with version 1.0.0, this project will use the [Semantic Versioning](http://semver.org/) specification by Tom Preston-Werner.
+Beginning with version 1.0.0, the version numbers of this project will conform to [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0.html).
 
 * 0.9.4 (2012-09-11)
-
-    Update `project.clj`, use Clojure 1.4, and change the license to the preferred Clojure license, EPL.
-
+    - Update `project.clj`, use Clojure 1.4, and change the license to the preferred Clojure license, EPL.
 * 0.9.2 (2011-06-17)
-
-    Mark all functions except for `schulze-winner` as private. (Continue to test the now-private functions using a workaround.)
-
+    - Mark all functions except for `schulze-winner` as private. (Continue to test the now-private functions using a workaround.)
 * 0.9.1 (2011-06-15)
-
-    Refine everything and update documentation in preparation for public release.
-
+    - Refine everything and update documentation in preparation for public release.
 * 0.9.0 (2011-06-14)
-
-    First working version! The library passes a number of tests extracted from online Schulze-method examples.
-	
+    - First working version! The library passes a number of tests extracted from online Schulze-method examples.
 * 2011-05-29
+    - Project started
 
-    Project started
+## License
 
-### License
-
-Copyright © 2011–2012 Benjamin D. Esham (www.bdesham.info).
-
-This project is distributed under the Eclipse Public License, the same as that used by Clojure. A copy of the license is included as “epl-v10.html” in this distribution.
+Copyright © 2011–2012 Benjamin D. Esham. This project is distributed under the Eclipse Public License, the same as that used by Clojure. A copy of the license is included as “epl-v10.html” in this distribution.
