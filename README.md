@@ -2,6 +2,8 @@
 
 A Clojure implementation of the Schulze voting method.
 
+⚠️ **Notice:** This project is no longer maintained. It may have severe security or compatibility problems. Use it at your own risk!
+
 ## Installation
 
 Add the following to the dependency list in your `project.clj`:
@@ -109,7 +111,7 @@ For more information on the Schulze method, see
 
 This library was written by [Benjamin Esham](https://esham.io).
 
-This project is [hosted on GitHub](https://github.com/bdesham/clj-schulze). Please feel free to submit pull requests.
+This project is [hosted on GitHub](https://github.com/bdesham/clj-schulze). It is **no longer being developed** and is left on GitHub only in the hope that someone will find the code interesting or useful.
 
 Thanks go to the fine folks in #clojure for answering tons of questions!
 
